@@ -1,0 +1,7 @@
+$ tsc --noEmit
+src/modules/conversation/pages/ChatPage.tsx(108,30): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/modules/conversation/pages/ChatPage.tsx(115,7): error TS2532: Object is possibly 'undefined'.
+src/modules/conversation/pages/ChatPage.tsx(119,7): error TS2532: Object is possibly 'undefined'.
+src/modules/core/utils/index.ts(2,9): error TS2614: Module '"./file"' has no exported member 'toBase64'. Did you mean to use 'import toBase64 from "./file"' instead?
+error Command failed with exit code 2.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

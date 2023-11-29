@@ -1,0 +1,11 @@
+$ jest
+- info Loaded env from /Users/refleckt/projects/react/askflow/askflow/apps/chat/.env
+PASS __tests__/index.test.tsx
+  Home
+    ✓ renders a heading (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        0.417 s, estimated 1 s
+Ran all test suites.
