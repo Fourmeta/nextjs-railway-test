@@ -182,10 +182,10 @@ const ChatPage = () => {
           products,
         };
         setMessages((prevMessages) => [...prevMessages, dummyMessage]);
-        setIsAITyping(false);
       }
 
       setMessages((prevMessages) => [...prevMessages, message]);
+      setIsAITyping(false);
     });
 
     return () => {
