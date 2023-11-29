@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* NOTE: to force static example responsivnes. Should be deleted */
+@media (max-width: 470px) {
+  #chat-page {
+    @apply bottom-0 right-0;
+  }
+
+  #chat-CTA {
+    @apply w-58;
+  }
+
+  #chat-assistan {
+    @apply w-full h-full rounded-none;
+  }
+}
+
+@media (min-width: 480px) {
+  #chat-page {
+    @apply bottom-6 right-6;
+  }
+
+  #chat-CTA {
+    @apply w-full;
+  }
+
+  #chat-assistant {
+    @apply w-108 rounded-2xl;
+  }
+}

@@ -195,11 +195,14 @@ const ChatPage = () => {
 
   return (
     <div
+      id="chat-page"
       className={classNames(
-        'absolute bottom-0 right-0 h-full w-full sm:bottom-6 sm:right-6',
+        // 'absolute bottom-0 right-0 h-full w-full sm:bottom-6 sm:right-6',
+        'absolute bottom-0 right-0 h-full w-full',
       )}>
       <div className='absolute bottom-6 right-6 flex flex-col items-end space-y-5'>
         <div
+          id="chat-CTA"
           onClick={openChatModal}
           className={classNames(
             'flex flex-col items-center justify-center rounded-lg bg-white',
@@ -220,10 +223,13 @@ const ChatPage = () => {
         </button>
       </div>
       <div
+        id="chat-assistan"
         className={classNames(
-          'absolute bottom-0 right-0 h-full w-full sm:h-[calc(100vh-1.5rem)] sm:w-108',
+          // 'absolute bottom-0 right-0 h-full w-full sm:h-[calc(100vh-1.5rem)] sm:w-108',
+          'absolute bottom-0 right-0 h-[calc(100vh-1.5rem)] w-108',
           'flex transform flex-col border border-neutrals-200 bg-white',
-          'overflow-hidden shadow-lg transition-all duration-300 sm:rounded-2xl',
+          // 'overflow-hidden shadow-lg transition-all duration-300 sm:rounded-2xl',
+          'overflow-hidden shadow-lg transition-all duration-300 rounded-2xl',
           'origin-bottom-right',
           {'-z-10 scale-50 opacity-0': !isChatOpened},
           {'z-10': isChatOpened},
