@@ -200,17 +200,18 @@ const ChatPage = () => {
         setQuickReplies(buttons);
       }
 
+      const tempMessages = [message];
+
       if (products?.length) {
         const dummyMessage: MessageType = {
           id: uuidv4(),
-          message: 'I have this recommendation for you',
           direction: 'incoming',
           products,
         };
-        setMessages((prevMessages) => [...prevMessages, dummyMessage]);
+        tempMessages.push(dummyMessage);
       }
+      setMessages((prevMessages) => [...prevMessages, ...tempMessages]);
 
-      setMessages((prevMessages) => [...prevMessages, message]);
       setIsAITyping(false);
     });
 
@@ -295,15 +296,15 @@ const ChatPage = () => {
                   )}>
                   <Sparkle
                     className={classNames('h-3.5 w-3.5 text-primary-600',
-                    {
-                      '!text-[#14B481]': isVitaminsAssistan,
-                    }
+                      {
+                        '!text-[#14B481]': isVitaminsAssistan,
+                      }
                     )}
                     weight='fill'
                   />
                 </div>
               )}
-              {message.message ? (
+              {message.message || message.products ? (
                 <div
                   className={classNames(
                     'flex max-w-full flex-col px-4 py-3',
@@ -311,16 +312,23 @@ const ChatPage = () => {
                     {
                       'rounded-tl-xl rounded-tr bg-primary-100':
                         message.direction === 'outgoing',
-                        '!bg-[#E0FEF4]': message.direction === 'outgoing' && isVitaminsAssistan,
+                      '!bg-[#E0FEF4]': message.direction === 'outgoing' && isVitaminsAssistan,
                       'rounded-tl rounded-tr-xl bg-neutrals-100':
                         message.direction === 'incoming',
+                      'w-full': (message.products || []).length >= 2,
+                      'w-1/2': (message.products || []).length == 1,
                     },
                   )}>
-                  <p className='font-medium text-neutrals-800'>
-                    {message.message}
-                  </p>
+                  {message.message && (
+                    <p className='font-medium text-neutrals-800'>
+                      {message.message}
+                    </p>)}
                   {(message.products || []).length > 0 && (
-                    <div className='mt-2 grid grid-cols-2 gap-1'>
+                    <div className={classNames('grid grid-cols-2 gap-1',
+                      {
+                        'grid-cols-1': (message.products || []).length === 1,
+                      }
+                    )}>
                       {message.products?.map((product) => (
                         <div
                           key={`product-${product.id}`}
@@ -384,23 +392,23 @@ const ChatPage = () => {
           ))}
           {isAITyping && (
             <div className={classNames('flex w-full gap-2')}>
-                <div
-                  className={classNames(
-                    'flex h-7 w-7 items-center justify-center bg-primary-100',
-                    'shrink-0 basis-7 rounded-full',
-                    {
-                      '!bg-[#E0FEF4]': isVitaminsAssistan,
-                    }
-                  )}>
-                  <Sparkle
-                    className={classNames('h-3.5 w-3.5 text-primary-600',
+              <div
+                className={classNames(
+                  'flex h-7 w-7 items-center justify-center bg-primary-100',
+                  'shrink-0 basis-7 rounded-full',
+                  {
+                    '!bg-[#E0FEF4]': isVitaminsAssistan,
+                  }
+                )}>
+                <Sparkle
+                  className={classNames('h-3.5 w-3.5 text-primary-600',
                     {
                       '!text-[#14B481]': isVitaminsAssistan,
                     }
-                    )}
-                    weight='fill'
-                  />
-                </div>
+                  )}
+                  weight='fill'
+                />
+              </div>
               <div
                 className={classNames(
                   'flex max-w-full flex-col px-4 py-3',
@@ -433,7 +441,7 @@ const ChatPage = () => {
                     {
                       '!bg-[#E0FEF4] !text-[#215F4B]': isVitaminsAssistan,
                     }
-                    )}
+                  )}
                   onClick={() => sendMessage(reply.title)}>
                   {reply.title}
                 </button>
@@ -486,7 +494,7 @@ const ChatPage = () => {
                 {
                   '!bg-[#14B481] !disabled:bg-[#14B481]/40': isVitaminsAssistan,
                 }
-                )
+              )
               }>
               <PaperPlaneTilt className='h-4 w-4 text-white' weight='bold' />
             </button>
