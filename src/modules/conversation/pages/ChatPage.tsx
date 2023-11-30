@@ -1,14 +1,14 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import {DotLottiePlayer} from '@dotlottie/react-player';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
-import {PaperPlaneTilt, Paperclip, Sparkle, X} from '@phosphor-icons/react';
+import { PaperPlaneTilt, Paperclip, Sparkle, X } from '@phosphor-icons/react';
 import classNames from 'classnames';
-import {useSearchParams} from 'next/navigation';
-import {io} from 'socket.io-client';
-import {v4 as uuidv4} from 'uuid';
+import { useSearchParams } from 'next/navigation';
+import { io } from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
 
-import {ThreeDotsLoader, toBase64, wait} from '@/modules/core';
+import { ThreeDotsLoader, toBase64, wait } from '@/modules/core';
 
 type MessageType = {
   id: string;
@@ -167,7 +167,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (chatInput.current) {
-      const {scrollHeight} = chatInput.current;
+      const { scrollHeight } = chatInput.current;
       chatInput.current.style.height = '32px';
       chatInput.current.style.height = `${scrollHeight}px`;
     }
@@ -175,7 +175,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (chatBox.current && messages.length) {
-      const {scrollHeight} = chatBox.current;
+      const { scrollHeight } = chatBox.current;
       chatBox.current.scrollTo(0, scrollHeight);
     }
   }, [messages]);
@@ -188,7 +188,7 @@ const ChatPage = () => {
 
     socket.emit('joinChatRoom', chatId);
     socket.on('receiveMessage', (data) => {
-      const {message, products, buttons} = data;
+      const { message, products, buttons } = data;
       if (buttons.length) {
         setQuickReplies(buttons);
       }
@@ -230,7 +230,7 @@ const ChatPage = () => {
             'flex flex-col items-center justify-center rounded-lg bg-white',
             'w-58 p-4 font-medium text-neutrals-800 shadow-lg sm:w-full',
             'cursor-pointer transition-all duration-300 ease-out',
-            {'invisible translate-y-12 transform opacity-0': !isCTAVisible},
+            { 'invisible translate-y-12 transform opacity-0': !isCTAVisible },
           )}>
           <p>👋 Hey, struggling to buy? Let’s have a chat! 👇</p>
         </div>
@@ -253,8 +253,8 @@ const ChatPage = () => {
           // 'overflow-hidden shadow-lg transition-all duration-300 sm:rounded-2xl',
           'overflow-hidden shadow-lg transition-all duration-300 rounded-2xl',
           'origin-bottom-right',
-          {'-z-10 scale-50 opacity-0': !isChatOpened},
-          {'z-10': isChatOpened},
+          { '-z-10 scale-50 opacity-0': !isChatOpened },
+          { 'z-10': isChatOpened },
         )}>
         <div className='relative border-b border-neutrals-200 px-5 py-3.5 text-neutrals-800'>
           <h3 className='font-semibold'>Shop Assistant</h3>
@@ -286,66 +286,79 @@ const ChatPage = () => {
                   />
                 </div>
               )}
-              <div
-                className={classNames(
-                  'flex max-w-full flex-col px-4 py-3',
-                  'overflow-hidden rounded-bl-xl rounded-br-xl',
-                  {
-                    'rounded-tl-xl rounded-tr bg-primary-100':
-                      message.direction === 'outgoing',
-                    'rounded-tl rounded-tr-xl bg-neutrals-100':
-                      message.direction === 'incoming',
-                  },
-                )}>
-                <p className='font-medium text-neutrals-800'>
-                  {message.message}
-                </p>
-                {message.file && (
-                  <img
-                    src={message.file}
-                    alt='image'
-                    className='h-44 object-cover'
-                  />
-                )}
-                {(message.products || []).length > 0 && (
-                  <div className='mt-2 grid grid-cols-2 gap-1'>
-                    {message.products?.map((product) => (
-                      <div
-                        key={`product-${product.id}`}
-                        className={classNames(
-                          'flex h-full flex-col overflow-hidden rounded-lg',
-                        )}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={product.imageUrl}
-                          alt={product.title}
-                          className='h-40 object-cover'
-                        />
-                        <div className='flex h-full flex-col justify-between gap-1 bg-white px-3 py-2'>
-                          <p className='text-sm font-semibold text-neutrals-800'>
-                            {product.title}
-                          </p>
-                          {product?.price && (
-                            <p className='text-xs text-neutrals-600'>
-                              {product.price}
+              {message.message ? (
+                <div
+                  className={classNames(
+                    'flex max-w-full flex-col px-4 py-3',
+                    'overflow-hidden rounded-bl-xl rounded-br-xl',
+                    {
+                      'rounded-tl-xl rounded-tr bg-primary-100':
+                        message.direction === 'outgoing',
+                      'rounded-tl rounded-tr-xl bg-neutrals-100':
+                        message.direction === 'incoming',
+                    },
+                  )}>
+                  <p className='font-medium text-neutrals-800'>
+                    {message.message}
+                  </p>
+                  {(message.products || []).length > 0 && (
+                    <div className='mt-2 grid grid-cols-2 gap-1'>
+                      {message.products?.map((product) => (
+                        <div
+                          key={`product-${product.id}`}
+                          className={classNames(
+                            'flex h-full flex-col overflow-hidden rounded-lg',
+                          )}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={product.imageUrl}
+                            alt={product.title}
+                            className='h-40 object-cover'
+                          />
+                          <div className='flex h-full flex-col justify-between gap-1 bg-white px-3 py-2'>
+                            <p className='text-sm font-semibold text-neutrals-800'>
+                              {product.title}
                             </p>
-                          )}
-                          <a
-                            href={product.productUrl}
-                            target='_blank'
-                            className={classNames(
-                              'flex w-full items-center justify-center rounded-md',
-                              'bg-primary-600 p-2 text-xs font-medium text-white',
+                            {product?.price && (
+                              <p className='text-xs text-neutrals-600'>
+                                {product.price}
+                              </p>
                             )}
-                            rel='noreferrer'>
-                            Buy now
-                          </a>
+                            <a
+                              href={product.productUrl}
+                              target='_blank'
+                              className={classNames(
+                                'flex w-full items-center justify-center rounded-md',
+                                'bg-primary-600 p-2 text-xs font-medium text-white',
+                              )}
+                              rel='noreferrer'>
+                              Buy now
+                            </a>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                      ))}
+                    </div>
+                  )}
+                </div>) :
+                <div
+                  className={classNames(
+                    'overflow-hidden rounded-bl-xl rounded-br-xl',
+                    {
+                      'rounded-tl-xl rounded-tr':
+                        message.direction === 'outgoing',
+                      'rounded-tl rounded-tr-xl':
+                        message.direction === 'incoming',
+                    },
+                  )}>
+                  {message.file && (
+                    <img
+                      src={message.file}
+                      alt='image'
+                      className='h-44 object-cover'
+                    />
+                  )}
+                </div>
+              }
             </div>
           ))}
           {isAITyping && (
@@ -433,7 +446,7 @@ const ChatPage = () => {
               onClick={() => sendMessage(currentMessage)}
               className={classNames(
                 'flex h-8 w-8 items-center justify-center rounded-md bg-primary-600',
-                'disabled:bg-neutrals-500')
+                'disabled:bg-primary-600/40')
               }>
               <PaperPlaneTilt className='h-4 w-4 text-white' weight='bold' />
             </button>
