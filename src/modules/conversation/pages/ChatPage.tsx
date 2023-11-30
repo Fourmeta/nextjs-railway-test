@@ -31,7 +31,6 @@ type ReplyType = {
   title: string;
 };
 
-// TODO: reset textarea height after message is sent
 // TODO: highlight email in the message
 
 // NOTE: after Slush
@@ -78,6 +77,8 @@ const ChatPage = () => {
     setCurrentMessage('');
     setQuickReplies([]);
     setIsAITyping(true);
+
+    chatInput.current.style.height = '32px';
 
     const response = await fetch('/api/messages', {
       method: 'POST',
@@ -315,18 +316,19 @@ const ChatPage = () => {
                       '!bg-[#E0FEF4]': message.direction === 'outgoing' && isVitaminsAssistan,
                       'rounded-tl rounded-tr-xl bg-neutrals-100':
                         message.direction === 'incoming',
-                      'w-full': (message.products || []).length >= 2,
                       'w-1/2': (message.products || []).length == 1,
+                      'w-full': (message.products || []).length >= 2,
                     },
                   )}>
                   {message.message && (
-                    <p className='font-medium text-neutrals-800'>
+                    <p className='font-medium text-neutrals-800 whitespace-pre-wrap'>
                       {message.message}
                     </p>)}
                   {(message.products || []).length > 0 && (
-                    <div className={classNames('grid grid-cols-2 gap-1',
+                    <div className={classNames('grid gap-1',
                       {
                         'grid-cols-1': (message.products || []).length === 1,
+                        'grid-cols-2': (message.products || []).length >= 2,
                       }
                     )}>
                       {message.products?.map((product) => (
