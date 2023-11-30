@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ThreeDotsLoader, toBase64, wait } from '@/modules/core';
+import { ThreeDotsLoader, ThreeDotsLoaderGreen, toBase64, wait } from '@/modules/core';
 
 type MessageType = {
   id: string;
@@ -38,6 +38,8 @@ type ReplyType = {
 // TODO: refactor
 // TODO: divide into components
 
+const vitaminsAssistan = 'asst_aX8cOs1SaMeCOFLaBcR3RT5I';
+
 const ChatPage = () => {
   const chatBox = useRef<HTMLDivElement>(null);
   const chatInput = useRef<HTMLTextAreaElement>(null);
@@ -60,6 +62,8 @@ const ChatPage = () => {
       direction: 'incoming',
     },
   ]);
+
+  const isVitaminsAssistan = assistantId === vitaminsAssistan;
 
   const sendMessage = async (message: string) => {
     if (!message) return;
@@ -240,6 +244,9 @@ const ChatPage = () => {
           className={classNames(
             'flex h-15 w-15 items-center justify-center rounded-full',
             'bg-primary-600 shadow-md transition-all duration-300',
+            {
+              '!bg-[#14B481]': isVitaminsAssistan,
+            }
           )}>
           <Sparkle className='h-7 w-7 text-white' weight='fill' />
         </button>
@@ -279,9 +286,16 @@ const ChatPage = () => {
                   className={classNames(
                     'flex h-7 w-7 items-center justify-center bg-primary-100',
                     'shrink-0 basis-7 rounded-full',
+                    {
+                      '!bg-[#E0FEF4]': isVitaminsAssistan,
+                    }
                   )}>
                   <Sparkle
-                    className='h-3.5 w-3.5 text-primary-600'
+                    className={classNames('h-3.5 w-3.5 text-primary-600',
+                    {
+                      '!text-[#14B481]': isVitaminsAssistan,
+                    }
+                    )}
                     weight='fill'
                   />
                 </div>
@@ -294,6 +308,7 @@ const ChatPage = () => {
                     {
                       'rounded-tl-xl rounded-tr bg-primary-100':
                         message.direction === 'outgoing',
+                        '!bg-[#E0FEF4]': message.direction === 'outgoing' && isVitaminsAssistan,
                       'rounded-tl rounded-tr-xl bg-neutrals-100':
                         message.direction === 'incoming',
                     },
@@ -330,6 +345,9 @@ const ChatPage = () => {
                               className={classNames(
                                 'flex w-full items-center justify-center rounded-md',
                                 'bg-primary-600 p-2 text-xs font-medium text-white',
+                                {
+                                  '!bg-[#14B481]': isVitaminsAssistan,
+                                }
                               )}
                               rel='noreferrer'>
                               Buy now
@@ -363,25 +381,35 @@ const ChatPage = () => {
           ))}
           {isAITyping && (
             <div className={classNames('flex w-full gap-2')}>
-              <div
-                className={classNames(
-                  'flex h-7 w-7 items-center justify-center bg-primary-100',
-                  'shrink-0 basis-7 rounded-full',
-                )}>
-                <Sparkle
-                  className='h-3.5 w-3.5 text-primary-600'
-                  weight='fill'
-                />
-              </div>
+                <div
+                  className={classNames(
+                    'flex h-7 w-7 items-center justify-center bg-primary-100',
+                    'shrink-0 basis-7 rounded-full',
+                    {
+                      '!bg-[#E0FEF4]': isVitaminsAssistan,
+                    }
+                  )}>
+                  <Sparkle
+                    className={classNames('h-3.5 w-3.5 text-primary-600',
+                    {
+                      '!text-[#14B481]': isVitaminsAssistan,
+                    }
+                    )}
+                    weight='fill'
+                  />
+                </div>
               <div
                 className={classNames(
                   'flex max-w-full flex-col px-4 py-3',
                   'overflow-hidden rounded-bl-xl rounded-br-xl',
-                  'rounded-tl rounded-tr-xl bg-neutrals-100',
+                  'rounded-tl rounded-tr-xl bg-primary-100',
+                  {
+                    '!bg-[#E0FEF4]': isVitaminsAssistan,
+                  }
                 )}>
                 <DotLottiePlayer
                   className='!h-6 !w-7'
-                  src={ThreeDotsLoader}
+                  src={isVitaminsAssistan ? ThreeDotsLoaderGreen : ThreeDotsLoader}
                   autoplay
                   loop
                 />
@@ -397,7 +425,12 @@ const ChatPage = () => {
                   key={reply.title}
                   type='button'
                   disabled={isAITyping}
-                  className='overflow-hidden whitespace-pre rounded-md bg-primary-100 px-2 py-1.5 text-primary-700'
+                  className={classNames(
+                    'overflow-hidden whitespace-pre rounded-md bg-primary-100 px-2 py-1.5 text-primary-700',
+                    {
+                      '!bg-[#E0FEF4] !text-[#215F4B]': isVitaminsAssistan,
+                    }
+                    )}
                   onClick={() => sendMessage(reply.title)}>
                   {reply.title}
                 </button>
@@ -446,7 +479,11 @@ const ChatPage = () => {
               onClick={() => sendMessage(currentMessage)}
               className={classNames(
                 'flex h-8 w-8 items-center justify-center rounded-md bg-primary-600',
-                'disabled:bg-primary-600/40')
+                'disabled:bg-primary-600/40',
+                {
+                  '!bg-[#14B481] !disabled:bg-[#14B481]/40': isVitaminsAssistan,
+                }
+                )
               }>
               <PaperPlaneTilt className='h-4 w-4 text-white' weight='bold' />
             </button>
