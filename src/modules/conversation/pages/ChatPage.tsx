@@ -99,6 +99,9 @@ const ChatPage = () => {
 
   const openChatModal = () => {
     setIsChatOpened(true);
+    if (chatInput.current) {
+      chatInput.current.focus();
+    }
     wait(1000).then(() => setUsCTAVisible(false));
   };
 
