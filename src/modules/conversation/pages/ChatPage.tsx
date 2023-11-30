@@ -2,19 +2,21 @@ import React, {useEffect, useRef, useState} from 'react';
 
 import {DotLottiePlayer} from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
-import {PaperPlaneTilt, Sparkle, X} from '@phosphor-icons/react';
+import {PaperPlaneTilt, Paperclip, Sparkle, X} from '@phosphor-icons/react';
 import classNames from 'classnames';
 import {useSearchParams} from 'next/navigation';
 import {io} from 'socket.io-client';
 import {v4 as uuidv4} from 'uuid';
 
-import {ThreeDotsLoader, wait} from '@/modules/core';
+import {ThreeDotsLoader, toBase64, wait} from '@/modules/core';
 
 type MessageType = {
   id: string;
-  message: string;
+  message?: string;
   direction: 'incoming' | 'outgoing';
   products?: ProductType[];
+  type?: 'image';
+  file?: string;
 };
 
 type ProductType = {
@@ -29,9 +31,8 @@ type ReplyType = {
   title: string;
 };
 
-// TODO: highlight email in the message
 // TODO: reset textarea height after message is sent
-// TODO: use different styles for different sites?
+// TODO: highlight email in the message
 
 // NOTE: after Slush
 // TODO: refactor
@@ -40,6 +41,7 @@ type ReplyType = {
 const ChatPage = () => {
   const chatBox = useRef<HTMLDivElement>(null);
   const chatInput = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const searchParams = useSearchParams();
   const assistantId = searchParams.get('assistantId');
@@ -73,8 +75,6 @@ const ChatPage = () => {
     setQuickReplies([]);
     setIsAITyping(true);
 
-    // TODO: add file upload
-
     const response = await fetch('/api/messages', {
       method: 'POST',
       headers: {
@@ -105,20 +105,39 @@ const ChatPage = () => {
     }
   };
 
-  // const handleImageUpload = (e) => {
-  //   e.preventDefault();
+  const fileSelectHandler = async (e) => {
+    const file = e.target.files[0];
+    const url = await toBase64(file);
 
-  //   const file = e.target.files[0];
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(file);
-  //   reader.onloadend = () => {
-  //     this.setState({
-  //       file: file,
-  //       base64: reader.result
-  //     });
-  //     this.handleSubmit()
-  //   };
-  // }
+    e.target.value = null;
+
+    const newMessage: MessageType = {
+      id: uuidv4(),
+      type: 'image',
+      direction: 'outgoing',
+      file: url,
+    };
+
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setIsAITyping(true);
+
+    const response = await fetch('/api/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chatId,
+        assistantId,
+        ...newMessage,
+      }),
+    });
+
+    if (!response.ok) {
+      setIsAITyping(false);
+      console.error('Failed to send message:', response.statusText);
+    }
+  }
 
   useEffect(() => {
     setChatId(uuidv4());
@@ -200,7 +219,10 @@ const ChatPage = () => {
         // 'absolute bottom-0 right-0 h-full w-full sm:bottom-6 sm:right-6',
         'absolute bottom-0 right-0 h-full w-full',
       )}>
-      <div className='absolute bottom-6 right-6 flex flex-col items-end space-y-5'>
+      <div
+        id="chat-widget"
+        className='absolute bottom-6 right-6 flex flex-col items-end space-y-5'
+      >
         <div
           id="chat-CTA"
           onClick={openChatModal}
@@ -278,6 +300,13 @@ const ChatPage = () => {
                 <p className='font-medium text-neutrals-800'>
                   {message.message}
                 </p>
+                {message.file && (
+                  <img
+                    src={message.file}
+                    alt='image'
+                    className='h-44 object-cover'
+                  />
+                )}
                 {(message.products || []).length > 0 && (
                   <div className='mt-2 grid grid-cols-2 gap-1'>
                     {message.products?.map((product) => (
@@ -352,8 +381,9 @@ const ChatPage = () => {
             <div className='mb-2 flex flex-wrap gap-2'>
               {quickReplies.map((reply) => (
                 <button
-                  type='button'
                   key={reply.title}
+                  type='button'
+                  disabled={isAITyping}
                   className='overflow-hidden whitespace-pre rounded-md bg-primary-100 px-2 py-1.5 text-primary-700'
                   onClick={() => sendMessage(reply.title)}>
                   {reply.title}
@@ -364,7 +394,7 @@ const ChatPage = () => {
           <div
             className={classNames(
               'flex w-full items-center gap-1 overflow-hidden p-2 py-2.5 pl-4',
-              'rounded-md border border-neutrals-200 bg-neutrals-50 ',
+              'rounded-md border border-neutrals-200 bg-neutrals-50',
             )}>
             <textarea
               ref={chatInput}
@@ -380,10 +410,31 @@ const ChatPage = () => {
               rows={1}
               required
             />
+            <input
+              ref={fileInputRef}
+              type="file"
+              onChange={fileSelectHandler}
+              accept="image/*"
+              hidden
+            />
+            <button
+              type="button"
+              disabled={isAITyping}
+              onClick={() =>
+                fileInputRef.current.click()
+              }
+              className="mr-2"
+            >
+              <Paperclip className='h-5 w-5 text-neutrals-500' weight='bold' />
+            </button>
             <button
               type='button'
+              disabled={isAITyping}
               onClick={() => sendMessage(currentMessage)}
-              className='flex h-8 w-8 items-center justify-center rounded-md bg-primary-600'>
+              className={classNames(
+                'flex h-8 w-8 items-center justify-center rounded-md bg-primary-600',
+                'disabled:bg-neutrals-500')
+              }>
               <PaperPlaneTilt className='h-4 w-4 text-white' weight='bold' />
             </button>
           </div>
